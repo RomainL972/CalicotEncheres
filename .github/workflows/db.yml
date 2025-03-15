@@ -18,9 +18,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Import SQL Database
         run: |
@@ -28,7 +26,7 @@ jobs:
             --resource-group rg-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --server sqlsrv-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --name sqldb-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
-            --admin-user ${{ secrets.AZURE_SQL_ADMIN }} \
-            --admin-password ${{ secrets.AZURE_SQL_PASSWORD }} \
+            --admin-user ${{ secrets.TF_VAR_sql_admin_user}} \
+            --admin-password ${{ secrets.TF_VAR_sql_admin_password }} \
             --storage-key-type SharedAccessKey \
             --storage-uri https://stcalicotprod000.blob.core.windows.net/db/Auctions_Data.bacpac
