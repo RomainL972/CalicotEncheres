@@ -40,9 +40,15 @@ resource "azurerm_linux_web_app" "webapp" {
   service_plan_id       = azurerm_service_plan.appserviceplan.id
   depends_on            = [azurerm_service_plan.appserviceplan]
   https_only            = true
+
   site_config { 
     always_on = true
+
+    application_stack {
+      dotnet_version = "8.0"
+    }
   }
+
   app_settings = {
     "ImageUrl" = "https://stcalicotprod000.blob.core.windows.net/images/"
   }
@@ -51,11 +57,11 @@ resource "azurerm_linux_web_app" "webapp" {
     type = "SystemAssigned"
   }
 
-  connection_string {
-    name  = "db"
-    type  = "SQLServer"
-    value = azurerm_mssql_server.sqlserver.connection_strings[0].value
-  }
+  # connection_string {
+  #   name  = "db"
+  #   type  = "SQLServer"
+  #   value = data.azurerm_key_vault_secret.connection_string.value
+  # }
 }
 
 resource "azurerm_mssql_server" "sqlserver" {
@@ -98,4 +104,25 @@ resource "azurerm_key_vault" "kv" {
       "List",
     ]
   }
+}
+
+# resource "azurerm_key_vault_access_policy" "access_policy" {
+#   key_vault_id = azurerm_key_vault.example.id
+#   tenant_id    = var.tenant_id
+#   object_id    = data.azurerm_client_config.current.object_id
+
+#   key_permissions = [
+#     "Get",
+#     "List"
+#   ]
+
+#   secret_permissions = [
+#     "Get",
+#     "List"
+#   ]
+# }
+
+data "azurerm_key_vault_secret" "connection_string" {
+  name         = "ConnectionStrings"
+  key_vault_id = azurerm_key_vault.kv.id
 }
