@@ -23,7 +23,7 @@ jobs:
       - name: Import SQL Database
         run: |
           az sql db import \
-            --resource-group rg-calicot-dev-${{ secrets.AZURE_RG }} \
+            --resource-group rg-calicot-web-dev-${{ secrets.AZURE_RG }} \
             --server sqlsrv-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --name sqldb-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --admin-user ${{ secrets.TF_VAR_sql_admin_user }} \
