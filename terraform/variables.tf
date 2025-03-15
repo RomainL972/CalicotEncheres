@@ -33,15 +33,3 @@ variable "sql_admin_password" {
   description = "SQL Server admin password"
   sensitive = true
 }
-
-variable "tenant_id" {
-  type        = string
-  description = "The Azure tenant ID"
-  default = "4dbda3f1-592e-4847-a01c-1671d0cc077f"
-}
-
-variable "object_id" {
-  type        = string
-  description = "The Azure object ID"
-  default = "34c6c373-ad28-45b2-a866-de1d853f2812"
-}
