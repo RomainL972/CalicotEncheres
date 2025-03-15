@@ -1,6 +1,6 @@
 variable "suffix" {
   description = "Code d'identification"
-  default    = "????"
+  default    = "10"
 }
 
 variable "location" {
