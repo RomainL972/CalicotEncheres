@@ -64,6 +64,72 @@ resource "azurerm_linux_web_app" "webapp" {
   # }
 }
 
+resource "azurerm_monitor_autoscale_setting" "appserviceplan_autoscale" {
+  name                = "autoscale-plan-calicot-dev-${var.suffix}"
+  location            = var.location
+  resource_group_name = data.azurerm_resource_group.web.name
+
+  target_resource_id = azurerm_service_plan.appserviceplan.id
+
+  profile {
+    name = "DefaultProfile"
+    capacity {
+      minimum = 1
+      default = 1
+      maximum = 2
+    }
+
+    # Scale out if average CPU > 70%
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_service_plan.appserviceplan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 70
+      }
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT5M"
+      }
+    }
+
+    # Scale in if average CPU < 30%
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_service_plan.appserviceplan.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 30
+      }
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = 1
+        cooldown  = "PT5M"
+      }
+    }
+  }
+
+  notification {
+    email {
+      send_to_subscription_administrator    = false
+      send_to_subscription_co_administrator = false
+      custom_emails                         = []
+    }
+  }
+}
+
+
 resource "azurerm_mssql_server" "sqlserver" {
   name                         = "sqlsrv-calicot-dev-${var.suffix}"
   resource_group_name          = data.azurerm_resource_group.web.name
