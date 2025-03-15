@@ -5,7 +5,7 @@ data "azurerm_resource_group" "web" {
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_virtual_network" "main" {
-  name                = "vnet-dev-calicot-cc-${var.suffix}"
+  name                = "vnet-${var.deployment_type}-calicot-cc-${var.suffix}"
   address_space       = ["10.0.0.0/16"]
   location            = data.azurerm_resource_group.web.location
   resource_group_name = data.azurerm_resource_group.web.name
@@ -84,7 +84,7 @@ resource "azurerm_monitor_autoscale_setting" "appserviceplan_autoscale" {
     # Scale out if average CPU > 70%
     rule {
       metric_trigger {
-        metric_name        = "Percentage CPU"
+        metric_name        = "CpuPercentage"
         metric_resource_id = azurerm_service_plan.appserviceplan.id
         time_grain         = "PT1M"
         statistic          = "Average"
@@ -104,7 +104,7 @@ resource "azurerm_monitor_autoscale_setting" "appserviceplan_autoscale" {
     # Scale in if average CPU < 30%
     rule {
       metric_trigger {
-        metric_name        = "Percentage CPU"
+        metric_name        = "CpuPercentage"
         metric_resource_id = azurerm_service_plan.appserviceplan.id
         time_grain         = "PT1M"
         statistic          = "Average"

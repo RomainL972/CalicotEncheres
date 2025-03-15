@@ -21,6 +21,12 @@ variable "common_resource_group_name" {
   description = ""
 }
 
+variable "deployment_type" {
+  type        = string
+  default     = "dev"
+  description = "Deployment type (dev or qa)"
+}
+
 variable "sql_admin_user" {
   type        = string
   default     = "sqladmin"
