@@ -20,6 +20,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Debug File Path
+        run: |
+          ls -lh db/
+          file db/Auctions_Data.bacpac
+
       - name: Upload BACPAC to Azure Storage
         run: |
           az storage blob upload \
