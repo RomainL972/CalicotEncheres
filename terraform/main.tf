@@ -46,13 +46,56 @@ resource "azurerm_linux_web_app" "webapp" {
   app_settings = {
     "ImageUrl" = "https://stcalicotprod000.blob.core.windows.net/images/"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  connection_string {
+    name  = "db"
+    type  = "SQLServer"
+    value = azurerm_mssql_server.sqlserver.connection_strings[0].value
+  }
 }
 
-#  Deploy code from a public GitHub repo
-resource "azurerm_app_service_source_control" "sourcecontrol" {
-  app_id             = azurerm_linux_web_app.webapp.id
-  repo_url           = "https://github.com/RomainL972/CalicotEncheres"
-  branch             = "main"
-  use_manual_integration = true
-  use_mercurial      = false
+resource "azurerm_mssql_server" "sqlserver" {
+  name                         = "sqlsrv-calicot-dev-${var.suffix}"
+  resource_group_name          = data.azurerm_resource_group.web.name
+  location                     = var.location
+  version                      = "12.0"
+  administrator_login          = var.sql_admin_user
+  administrator_login_password = var.sql_admin_password
+}
+
+resource "azurerm_mssql_database" "sqldb" {
+  name         = "sqldb-calicot-dev-${var.suffix}"
+  server_id    = azurerm_mssql_server.sqlserver.id
+}
+
+resource "azurerm_key_vault" "kv" {
+  name                        = "kv-calicot-dev-${var.suffix}"
+  location                    = var.location
+  resource_group_name         = data.azurerm_resource_group.web.name
+  tenant_id                   = var.tenant_id
+  sku_name                    = "standard"
+
+  access_policy {
+    tenant_id = var.tenant_id
+    object_id = var.object_id
+
+    secret_permissions = [
+      "Get",
+      "List",
+    ]
+
+    key_permissions = [
+      "Get",
+      "List",
+    ]
+
+    certificate_permissions = [
+      "Get",
+      "List",
+    ]
+  }
 }
