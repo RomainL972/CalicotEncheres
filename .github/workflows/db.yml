@@ -26,7 +26,8 @@ jobs:
             --resource-group rg-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --server sqlsrv-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
             --name sqldb-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
-            --admin-user ${{ secrets.TF_VAR_sql_admin_user}} \
+            --admin-user ${{ secrets.TF_VAR_sql_admin_user }} \
             --admin-password ${{ secrets.TF_VAR_sql_admin_password }} \
             --storage-key-type SharedAccessKey \
-            --storage-uri https://stcalicotprod000.blob.core.windows.net/db/Auctions_Data.bacpac
+            --storage-uri https://stcalicotprod000.blob.core.windows.net/db/Auctions_Data.bacpac \
+            --storage-key ${{ secrets.AZURE_STORAGE_KEY }}
