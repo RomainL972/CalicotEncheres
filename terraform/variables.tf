@@ -1,6 +1,6 @@
 variable "suffix" {
   description = "Code d'identification"
-  default    = "10"
+  default    = "69420"
 }
 
 variable "location" {
@@ -8,7 +8,6 @@ variable "location" {
   default     = "canadacentral"
   description = "Location of the resource group."
 }
-
 
 variable "web_resource_group_name" {
   type        = string
