@@ -5,6 +5,13 @@ terraform {
       version = "~>4.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name   = "rg-calicot-web-dev-10"
+    storage_account_name  = "team10storage"
+    container_name        = "state"
+    key                   = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
