@@ -25,15 +25,15 @@ jobs:
           ls -lh db/
           file db/Auctions_Data.bacpac
 
-      - name: Upload BACPAC to Azure Storage
-        run: |
-          az storage blob upload \
-            --account-name stcalicotprod000 \
-            --container-name db \
-            --name Auctions_Data.bacpac \
-            --file db/Auctions_Data.bacpac \
-            --auth-mode key \
-            --account-key ${{ secrets.AZURE_STORAGE_KEY }}
+      # - name: Upload BACPAC to Azure Storage
+      #   run: |
+      #     az storage blob upload \
+      #       --account-name stcalicotprod000 \
+      #       --container-name db \
+      #       --name Auctions_Data.bacpac \
+      #       --file db/Auctions_Data.bacpac \
+      #       --auth-mode key \
+      #       --account-key ${{ secrets.AZURE_STORAGE_KEY }}
 
       - name: Import SQL Database
         run: |
@@ -44,5 +44,5 @@ jobs:
             --admin-user ${{ secrets.TF_VAR_sql_admin_user }} \
             --admin-password ${{ secrets.TF_VAR_sql_admin_password }} \
             --storage-key-type SharedAccessKey \
-            --storage-uri https://stcalicotprod000.blob.core.windows.net/db/Auctions_Data.bacpac \
+            --storage-uri https://team10storage.blob.core.windows.net/database/Auctions_Data.bacpac \
             --storage-key ${{ secrets.AZURE_STORAGE_KEY }}
