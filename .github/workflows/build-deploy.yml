@@ -1,4 +1,4 @@
-name: Build and Deploy App
+name: Build and Deploy .NET App
 
 on:
   push:
@@ -10,25 +10,29 @@ permissions:
   contents: read
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
         with:
-          node-version: 18
+          dotnet-version: 6.0 # Update if needed
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: app
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: CalicotEncheres/Auctions
 
-      - name: Build application
-        run: npm run build
-        working-directory: app
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+        working-directory: CalicotEncheres/Auctions
+
+      - name: Publish
+        run: dotnet publish -c Release -o published
+        working-directory: CalicotEncheres/Auctions
 
       - name: Azure Login
         uses: azure/login@v1
@@ -36,9 +40,10 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          allow-no-subscriptions: true
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: app-calicot-dev-${{ secrets.AZURE_CODE_ID }}
-          package: app/build
+          package: CalicotEncheres/Auctions/published
