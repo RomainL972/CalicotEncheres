@@ -37,6 +37,8 @@ resource "azurerm_linux_web_app" "webapp" {
     type  = "SQLServer"
     value = data.azurerm_key_vault_secret.connection_string.value
   }
+
+  virtual_network_subnet_id = azurerm_subnet.web.id
 }
 
 resource "azurerm_monitor_autoscale_setting" "appserviceplan_autoscale" {

@@ -11,3 +11,9 @@ resource "azurerm_mssql_database" "sqldb" {
   name      = "sqldb-calicot-${var.deployment_type}-${var.suffix}"
   server_id = azurerm_mssql_server.sqlserver.id
 }
+
+resource "azurerm_mssql_virtual_network_rule" "sqldb_network" {
+  name = "vnet-rule-${var.deployment_type}-${var.suffix}"
+  server_id                 = azurerm_mssql_server.sqlserver.id
+  subnet_id                 = azurerm_subnet.db.id
+}
