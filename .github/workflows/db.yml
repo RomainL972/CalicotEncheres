@@ -15,19 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Import SQL Database
+      - name: Install SQLPackage
         run: |
-          az sql db import \
-            --resource-group rg-calicot-web-dev-${{ secrets.AZURE_RG }} \
-            --server sqlsrv-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
-            --name sqldb-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
-            --admin-user ${{ secrets.TF_VAR_sql_admin_user }} \
-            --admin-password ${{ secrets.TF_VAR_sql_admin_password }} \
-            --storage-key-type SharedAccessKey \
-            --storage-uri https://stcalicotprod000.blob.core.windows.net/db/Auctions_Data.bacpac \
-            --storage-key ${{ secrets.AZURE_STORAGE_KEY }}
+          wget https://aka.ms/sqlpackage-linux -O sqlpackage.zip
+          unzip sqlpackage.zip -d sqlpackage
+          chmod +x sqlpackage/sqlpackage
+          sudo mv sqlpackage/sqlpackage /usr/local/bin/sqlpackage
+
+      - name: Deploy BACPAC to Azure SQL
+        run: |
+          sqlpackage /a:Import \
+            /sf:db/Auctions_Data.bacpac \
+            /tsn:tcp:sqlsrv-calicot-dev-${{ secrets.AZURE_CODE_ID }}.database.windows.net \
+            /tdn:sqldb-calicot-dev-${{ secrets.AZURE_CODE_ID }} \
+            /tu:${{ secrets.TF_VAR_sql_admin_user }} \
+            /tp:${{ secrets.TF_VAR_sql_admin_password }}
